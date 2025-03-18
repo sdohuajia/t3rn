@@ -1,32 +1,32 @@
 #!/bin/bash
 
-# 脚本保存路径
+# Script save path
 SCRIPT_PATH="$HOME/t3rn.sh"
 LOGFILE="$HOME/executor/executor.log"
 EXECUTOR_DIR="$HOME/executor"
 
-# 检查是否以 root 用户运行脚本
+# Check if the script is run as root
 if [ "$(id -u)" != "0" ]; then
-    echo "此脚本需要以 root 用户权限运行。"
-    echo "请尝试使用 'sudo -i' 命令切换到 root 用户，然后再次运行此脚本。"
+    echo "This script must be run as root."
+    echo "Please try using 'sudo -i' to switch to the root user, then run this script again."
     exit 1
 fi
 
-# 主菜单函数
+# Main menu function
 function main_menu() {
     while true; do
         clear
-        echo "脚本由大赌社区哈哈哈哈编写，推特 @ferdie_jhovie，免费开源，请勿相信收费"
-        echo "如有问题，可联系推特，仅此只有一个号"
+        echo "Script written by Dadu Community hahaha, Twitter: @ferdie_jhovie, free and open-source. Do not trust paid versions."
+        echo "For any issues, contact Twitter. This is the only official account."
         echo "================================================================"
-        echo "退出脚本，请按键盘 ctrl + C 退出即可"
-        echo "请选择要执行的操作:"
-        echo "1) 执行脚本"
-        echo "2) 查看日志"
-        echo "3) 删除节点"
-        echo "5) 退出"
+        echo "To exit the script, press Ctrl + C."
+        echo "Please select an option:"
+        echo "1) Run the script"
+        echo "2) View logs"
+        echo "3) Delete node"
+        echo "5) Exit"
         
-        read -p "请输入你的选择 [1-3]: " choice
+        read -p "Enter your choice [1-3]: " choice
         
         case $choice in
             1)
@@ -39,168 +39,128 @@ function main_menu() {
                 delete_node
                 ;;
             5)
-                echo "退出脚本。"
+                echo "Exiting the script."
                 exit 0
                 ;;
             *)
-                echo "无效的选择，请重新输入。"
+                echo "Invalid choice. Please try again."
                 ;;
         esac
     done
 }
 
-# 执行脚本函数
+# Function to execute the script
 function execute_script() {
-    # 检查 pm2 是否安装，如果没有安装则自动安装
+    # Check if pm2 is installed, install it if not
     if ! command -v pm2 &> /dev/null; then
-        echo "pm2 未安装，正在安装 pm2..."
-        # 安装 pm2
+        echo "pm2 is not installed. Installing pm2..."
         sudo npm install -g pm2
         if [ $? -eq 0 ]; then
-            echo "pm2 安装成功。"
+            echo "pm2 installed successfully."
         else
-            echo "pm2 安装失败，请检查 npm 配置。"
+            echo "pm2 installation failed. Please check npm configuration."
             exit 1
         fi
     else
-        echo "pm2 已安装，继续执行。"
+        echo "pm2 is already installed. Continuing."
     fi
 
-    # 下载最新版本的文件
-    echo "正在下载最新版本的 executor..."
+    # Download the latest version of the executor
+    echo "Downloading the latest version of the executor..."
     curl -s https://api.github.com/repos/t3rn/executor-release/releases/latest | \
     grep -Po '"tag_name": "\K.*?(?=")' | \
     xargs -I {} wget https://github.com/t3rn/executor-release/releases/download/{}/executor-linux-{}.tar.gz
 
-    # 检查下载是否成功
     if [ $? -eq 0 ]; then
-        echo "下载成功。"
+        echo "Download successful."
     else
-        echo "下载失败，请检查网络连接或下载地址。"
+        echo "Download failed. Please check network connection or URL."
         exit 1
     fi
 
-    # 解压文件到当前目录
-    echo "正在解压文件..."
+    # Extract the files
+    echo "Extracting files..."
     tar -xzf executor-linux-*.tar.gz
 
-    # 检查解压是否成功
     if [ $? -eq 0 ]; then
-        echo "解压成功。"
+        echo "Extraction successful."
     else
-        echo "解压失败，请检查 tar.gz 文件。"
+        echo "Extraction failed. Please check the tar.gz file."
         exit 1
     fi
 
-    # 检查解压后的文件名是否包含 'executor'
-    echo "正在检查解压后的文件或目录名称是否包含 'executor'..."
+    # Check for extracted files
+    echo "Checking for extracted executor files..."
     if ls | grep -q 'executor'; then
-        echo "检查通过，找到包含 'executor' 的文件或目录。"
+        echo "Executor files detected."
     else
-        echo "未找到包含 'executor' 的文件或目录，可能文件名不正确。"
+        echo "Executor files not found. Exiting."
         exit 1
     fi
 
-    # 提示用户输入环境变量的值，给 EXECUTOR_MAX_L3_GAS_PRICE 设置默认值为 100
-    read -p "请输入 EXECUTOR_MAX_L3_GAS_PRICE 的值 [默认 100]: " EXECUTOR_MAX_L3_GAS_PRICE
+    # Prompt for environment variables
+    read -p "Enter EXECUTOR_MAX_L3_GAS_PRICE [default 100]: " EXECUTOR_MAX_L3_GAS_PRICE
     EXECUTOR_MAX_L3_GAS_PRICE="${EXECUTOR_MAX_L3_GAS_PRICE:-100}"
 
-    # 提示用户输入 RPC_ENDPOINTS_ARBT，如果没有输入则使用默认值
-    read -p "请输入 RPC_ENDPOINTS_ARBT 的值 [默认 https://arbitrum-sepolia.drpc.org, https://sepolia-rollup.arbitrum.io/rpc]: " RPC_ENDPOINTS_ARBT
+    read -p "Enter RPC_ENDPOINTS_ARBT [default URLs provided]: " RPC_ENDPOINTS_ARBT
     RPC_ENDPOINTS_ARBT="${RPC_ENDPOINTS_ARBT:-https://arbitrum-sepolia.drpc.org, https://sepolia-rollup.arbitrum.io/rpc}"
 
-    # 提示用户输入 RPC_ENDPOINTS_BAST，如果没有输入则使用默认值
-    read -p "请输入 RPC_ENDPOINTS_BAST 的值 [默认 https://base-sepolia-rpc.publicnode.com, https://base-sepolia.drpc.org]: " RPC_ENDPOINTS_BAST
+    read -p "Enter RPC_ENDPOINTS_BAST [default URLs provided]: " RPC_ENDPOINTS_BAST
     RPC_ENDPOINTS_BAST="${RPC_ENDPOINTS_BAST:-https://base-sepolia-rpc.publicnode.com, https://base-sepolia.drpc.org}"
 
-    # 提示用户输入 RPC_ENDPOINTS_OPST，如果没有输入则使用默认值
-    read -p "请输入 RPC_ENDPOINTS_OPST 的值 [默认 https://sepolia.optimism.io, https://optimism-sepolia.drpc.org]: " RPC_ENDPOINTS_OPST
+    read -p "Enter RPC_ENDPOINTS_OPST [default URLs provided]: " RPC_ENDPOINTS_OPST
     RPC_ENDPOINTS_OPST="${RPC_ENDPOINTS_OPST:-https://sepolia.optimism.io, https://optimism-sepolia.drpc.org}"
 
-    # 提示用户输入 RPC_ENDPOINTS_UNIT，如果没有输入则使用默认值
-    read -p "请输入 RPC_ENDPOINTS_UNIT 的值 [默认 https://unichain-sepolia.drpc.org, https://sepolia.unichain.org]: " RPC_ENDPOINTS_UNIT
+    read -p "Enter RPC_ENDPOINTS_UNIT [default URLs provided]: " RPC_ENDPOINTS_UNIT
     RPC_ENDPOINTS_UNIT="${RPC_ENDPOINTS_UNIT:-https://unichain-sepolia.drpc.org, https://sepolia.unichain.org}"
 
-    # 设置环境变量
     export NODE_ENV=testnet
     export LOG_LEVEL=debug
     export LOG_PRETTY=false
     export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,blast-sepolia,optimism-sepolia,l2rn'
-    export EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=false
     export EXECUTOR_MAX_L3_GAS_PRICE="$EXECUTOR_MAX_L3_GAS_PRICE"
 
-    # 新增的环境变量
-    export EXECUTOR_PROCESS_ORDERS=true
-    export EXECUTOR_PROCESS_CLAIMS=true
-    export RPC_ENDPOINTS='{
-        "l2rn": ["https://b2n.rpc.caldera.xyz/http"],
-        "arbt": ["'"$RPC_ENDPOINTS_ARBT"'"],
-        "bast": ["'"$RPC_ENDPOINTS_BAST"'"],
-        "opst": ["'"$RPC_ENDPOINTS_OPST"'"],
-        "unit": ["'"$RPC_ENDPOINTS_UNIT"'"]
-    }'
-
-    # 提示用户输入私钥
-    read -p "请输入 PRIVATE_KEY_LOCAL 的值: " PRIVATE_KEY_LOCAL
-
-    # 设置私钥变量
+    read -p "Enter PRIVATE_KEY_LOCAL: " PRIVATE_KEY_LOCAL
     export PRIVATE_KEY_LOCAL="$PRIVATE_KEY_LOCAL"
 
-    # 删除压缩文件
-    echo "删除压缩包..."
     rm executor-linux-*.tar.gz
 
-    # 切换目录到 executor/bin
-    echo "切换目录并准备使用 pm2 启动 executor..."
+    echo "Starting executor using pm2..."
     cd ~/executor/executor/bin
-
-    # 使用 pm2 启动 executor
-    echo "通过 pm2 启动 executor..."
     pm2 start ./executor --name "executor" --log "$LOGFILE" --env NODE_ENV=testnet
-
-    # 显示 pm2 进程列表
     pm2 list
 
-    echo "executor 已通过 pm2 启动。"
-
-    # 提示用户按任意键返回主菜单
-    read -n 1 -s -r -p "按任意键返回主菜单..."
+    echo "Executor started using pm2."
+    read -n 1 -s -r -p "Press any key to return to the main menu..."
     main_menu
 }
 
-
-# 查看日志函数
+# Function to view logs
 function view_logs() {
     if [ -f "$LOGFILE" ]; then
-        echo "实时显示日志文件内容（按 Ctrl+C 退出）："
-        tail -f "$LOGFILE"  # 使用 tail -f 实时跟踪日志文件
+        echo "Displaying logs (Press Ctrl+C to exit):"
+        tail -f "$LOGFILE"
     else
-        echo "日志文件不存在。"
+        echo "Log file not found."
     fi
 }
 
-# 删除节点函数
+# Function to delete the node
 function delete_node() {
-    echo "正在停止节点进程..."
-
-    # 使用 pm2 停止 executor 进程
+    echo "Stopping the executor..."
     pm2 stop "executor"
 
-    # 删除 executor 所在的目录
     if [ -d "$EXECUTOR_DIR" ]; then
-        echo "正在删除节点目录..."
+        echo "Deleting executor directory..."
         rm -rf "$EXECUTOR_DIR"
-        echo "节点目录已删除。"
+        echo "Node deleted."
     else
-        echo "节点目录不存在，可能已被删除。"
+        echo "Node directory not found."
     fi
 
-    echo "节点删除操作完成。"
-
-    # 提示用户按任意键返回主菜单
-    read -n 1 -s -r -p "按任意键返回主菜单..."
+    read -n 1 -s -r -p "Press any key to return to the main menu..."
     main_menu
 }
 
-# 启动主菜单
+# Start the main menu
 main_menu
