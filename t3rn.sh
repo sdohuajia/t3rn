@@ -25,10 +25,10 @@ function main_menu() {
         echo "2) 查看日志"
         echo "3) 删除节点"
         echo "4) 安装 v53.1.sh"
-        echo "5) 安装 v53.sh"
-        echo "6) 安装 v54.sh"
-        echo "7) 安装 v56.sh"
-        echo "8) 安装 v57.sh"
+        echo "5) 安装 v54.sh"
+        echo "6) 安装 v56.sh"
+        echo "7) 安装 v57.sh"
+        echo "8) 安装 v58.sh"
         echo "9) 退出"
         
         read -p "请输入你的选择 [1-9]: " choice
@@ -47,16 +47,16 @@ function main_menu() {
                 install_v53.1
                 ;;
             5)
-                install_v53
-                ;;
-            6)
                 install_v54
                 ;;
-            7)
+            6)
                 install_v56
                 ;;
-            8)
+            7)
                 install_v57
+                ;;
+            8)
+                install_v58
                 ;;
             9)
                 echo "退出脚本。"
@@ -288,6 +288,20 @@ function install_v57() {
     echo "v57.sh 安装成功。"
     else
     echo "v57.sh 安装失败，请检查脚本。"
+    fi
+
+    # 提示用户按任意键返回主菜单
+    read -n 1 -s -r -p "按任意键返回主菜单..."
+    main_menu
+}
+
+# 安装 v58.sh 函数
+function install_v58() {
+    wget -O v58.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v58.sh && sed -i 's/\r$//' v58.sh && chmod +x v58.sh && ./v58.sh
+    if [ $? -eq 0 ]; then
+    echo "v58.sh 安装成功。"
+    else
+    echo "v58.sh 安装失败，请检查脚本。"
     fi
 
     # 提示用户按任意键返回主菜单
