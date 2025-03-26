@@ -25,9 +25,9 @@ function main_menu() {
         echo "2) 查看日志"
         echo "3) 删除节点"
         echo "4) 安装 v53.1.sh"
-        echo "5) 安装 v54.sh"
-        echo "6) 安装 v56.sh"
-        echo "7) 安装 v57.sh"
+        echo "5) 安装 v56.sh"
+        echo "6) 安装 v57.sh"
+        echo "7) 安装 v58.sh"
         echo "8) 安装 v58.sh"
         echo "9) 退出"
         
@@ -47,16 +47,16 @@ function main_menu() {
                 install_v53.1
                 ;;
             5)
-                install_v54
-                ;;
-            6)
                 install_v56
                 ;;
-            7)
+            6)
                 install_v57
                 ;;
-            8)
+            7)
                 install_v58
+                ;;
+            8)
+                install_v59
                 ;;
             9)
                 echo "退出脚本。"
@@ -252,14 +252,14 @@ function install_v53() {
     main_menu
 }
 
-# 安装 v54.sh 函数
-function install_v54() {
-    echo "正在下载并安装 v54.sh..."
-    wget -O v54.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v54.sh && sed -i 's/\r$//' v54.sh && chmod +x v54.sh && ./v54.sh
+# 安装 v59.sh 函数
+function install_v59() {
+    echo "正在下载并安装 v59.sh..."
+    wget -O v59.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v59.sh && sed -i 's/\r$//' v59.sh && chmod +x v59.sh && ./v59.sh
     if [ $? -eq 0 ]; then
-    echo "v54.sh 安装成功。"
+    echo "v59.sh 安装成功。"
     else
-    echo "v54.sh 安装失败，请检查脚本。"
+    echo "v59.sh 安装失败，请检查脚本。"
     fi
 
     # 提示用户按任意键返回主菜单
