@@ -28,7 +28,7 @@ function main_menu() {
         echo "5) 安装 v56.sh"
         echo "6) 安装 v57.sh"
         echo "7) 安装 v58.sh"
-        echo "8) 安装 v58.sh"
+        echo "8) 安装 v59.sh"
         echo "9) 退出"
         
         read -p "请输入你的选择 [1-9]: " choice
