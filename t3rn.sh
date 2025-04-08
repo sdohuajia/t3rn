@@ -160,7 +160,7 @@ function execute_script() {
     }'
 
     # 提示用户输入私钥
-    read -p "请输入 PRIVATE_KEY_LOCAL 的值: " PRIVATE_KEY_LOCAL
+    read -p "请输入 EVM私钥 的值: " PRIVATE_KEY_LOCAL
 
     # 设置私钥变量
     export PRIVATE_KEY_LOCAL="$PRIVATE_KEY_LOCAL"
