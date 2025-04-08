@@ -84,7 +84,7 @@ fi
 echo "RPC_ENDPOINTS 已设置为:"
 echo "$RPC_ENDPOINTS"
 
-read -p "请输入 PRIVATE_KEY_LOCAL 的值: " PRIVATE_KEY_LOCAL
+read -p "请输入 evm私钥 的值: " PRIVATE_KEY_LOCAL
 export PRIVATE_KEY_LOCAL="$PRIVATE_KEY_LOCAL"
 
 # 进入 executor 目录并启动
