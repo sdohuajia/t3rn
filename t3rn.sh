@@ -24,11 +24,11 @@ function main_menu() {
         echo "1) 执行脚本（最新版）"
         echo "2) 查看日志"
         echo "3) 删除节点"
-        echo "4) 安装 v53.1.sh"
-        echo "5) 安装 v56.sh"
-        echo "6) 安装 v57.sh"
-        echo "7) 安装 v58.sh"
-        echo "8) 安装 v59.sh"
+        echo "4) 安装 v56.sh"
+        echo "5) 安装 v57.sh"
+        echo "6) 安装 v58.sh"
+        echo "7) 安装 v59.sh"
+        echo "8) 安装 v62.sh"
         echo "9) 退出"
         
         read -p "请输入你的选择 [1-9]: " choice
@@ -221,30 +221,14 @@ function delete_node() {
     main_menu
 }
 
-# 安装 v53.1.sh 函数
-function install_v53.1() {
-    echo "正在下载并安装 v53.1.sh..."
-    wget -O v53.1.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v53.1.sh && sed -i 's/\r$//' v53.1.sh && chmod +x v53.1.sh && ./v53.1.sh
+# 安装 v62.sh 函数
+function install_v62() {
+    echo "正在下载并安装 v62.sh..."
+    wget -O v62.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v62.sh && sed -i 's/\r$//' v62.sh && chmod +x v62.sh && ./v62.sh
     if [ $? -eq 0 ]; then
-    echo "v53.sh 安装成功。"
+    echo "v62.sh 安装成功。"
     else
-    echo "v53.sh 安装失败，请检查脚本。"
-    fi
-
-    # 提示用户按任意键返回主菜单
-    read -n 1 -s -r -p "按任意键返回主菜单..."
-    main_menu
-}
-
-
-# 安装 v53.sh 函数
-function install_v53() {
-    echo "正在下载并安装 v53.sh..."
-    wget -O v53.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v53.sh && sed -i 's/\r$//' v53.sh && chmod +x v53.sh && ./v53.sh
-    if [ $? -eq 0 ]; then
-    echo "v53.sh 安装成功。"
-    else
-    echo "v53.sh 安装失败，请检查脚本。"
+    echo "v62.sh 安装失败，请检查脚本。"
     fi
 
     # 提示用户按任意键返回主菜单
