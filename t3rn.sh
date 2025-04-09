@@ -44,7 +44,7 @@ function main_menu() {
                 delete_node
                 ;;
             4)
-                install_v53.1
+                install_v62
                 ;;
             5)
                 install_v56
