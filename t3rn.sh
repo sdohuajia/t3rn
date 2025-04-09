@@ -44,19 +44,19 @@ function main_menu() {
                 delete_node
                 ;;
             4)
-                install_v62
-                ;;
-            5)
                 install_v56
                 ;;
-            6)
+            5)
                 install_v57
                 ;;
-            7)
+            6)
                 install_v58
                 ;;
-            8)
+            7)
                 install_v59
+                ;;
+            8)
+                install_v62
                 ;;
             9)
                 echo "退出脚本。"
