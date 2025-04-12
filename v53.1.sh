@@ -24,13 +24,13 @@ if ! dpkg -s tar &> /dev/null; then
 fi
 
 # 下载最新版本的 executor
-echo "正在下载 v53.1 executor..."
-wget -O executor-linux-0.53.1.tar.gz https://github.com/t3rn/executor-release/releases/download/v0.53.1/executor-linux-v0.53.1.tar.gz || { echo "下载失败"; exit 1; }
+echo "正在下载 v63.1 executor..."
+wget -O executor-linux-0.63.1.tar.gz https://github.com/t3rn/executor-release/releases/download/v0.63.1/executor-linux-v0.63.1.tar.gz || { echo "下载失败"; exit 1; }
 
 # 解压文件
 echo "正在解压文件..."
-tar -xzf executor-linux-0.53.1.tar.gz || { echo "解压失败"; exit 1; }
-rm executor-linux-0.53.1.tar.gz
+tar -xzf executor-linux-0.63.1.tar.gz || { echo "解压失败"; exit 1; }
+rm executor-linux-0.63.1.tar.gz
 
 # 检查解压后目录
 if [ ! -d "$EXECUTOR_DIR/executor/bin" ]; then
