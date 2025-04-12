@@ -251,13 +251,13 @@ function install_v59() {
     main_menu
 }
 
-# 安装 v56.sh 函数
-function install_v56() {
-    wget -O v56.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v56.sh && sed -i 's/\r$//' v56.sh && chmod +x v56.sh && ./v56.sh
+# 安装 v63.1.sh 函数
+function install_v63.1() {
+    wget -O v63.1.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v63.1.sh && sed -i 's/\r$//' v63.1.sh && chmod +x v63.1.sh && ./v63.1.sh
     if [ $? -eq 0 ]; then
-    echo "v56.sh 安装成功。"
+    echo "v63.1.sh 安装成功。"
     else
-    echo "v56.sh 安装失败，请检查脚本。"
+    echo "v63.1.sh 安装失败，请检查脚本。"
     fi
 
     # 提示用户按任意键返回主菜单
