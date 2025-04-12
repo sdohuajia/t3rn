@@ -24,7 +24,7 @@ function main_menu() {
         echo "1) 执行脚本（最新版）"
         echo "2) 查看日志"
         echo "3) 删除节点"
-        echo "4) 安装 v56.sh"
+        echo "4) 安装 v63.1.sh"
         echo "5) 安装 v57.sh"
         echo "6) 安装 v58.sh"
         echo "7) 安装 v59.sh"
@@ -44,7 +44,7 @@ function main_menu() {
                 delete_node
                 ;;
             4)
-                install_v56
+                install_v63.1
                 ;;
             5)
                 install_v57
