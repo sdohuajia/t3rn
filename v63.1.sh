@@ -25,7 +25,7 @@ fi
 
 # 下载最新版本的 executor
 echo "正在下载 v63.1 executor..."
-wget -O executor-linux-0.63.1.tar.gz https://github.com/t3rn/executor-release/releases/download/v0.63.1.0/executor-linux-v0.63.1.tar.gz || { echo "下载失败"; exit 1; }
+wget -O executor-linux-0.63.1.tar.gz https://github.com/t3rn/executor-release/releases/download/v0.63.1/executor-linux-v0.63.1.tar.gz || { echo "下载失败"; exit 1; }
 
 # 解压文件
 echo "正在解压文件..."
