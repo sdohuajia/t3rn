@@ -25,7 +25,7 @@ fi
 
 # 下载最新版本的 executor
 echo "正在下载 v63.1 executor..."
-wget -O executor-linux-0.63.1.tar.gz https://github.com/t3rn/executor-release/releases/download/v0.63.1/executor-linux-v0.63.1.tar.gz || { echo "下载失败"; exit 1; }
+wget -O executor-linux-0.63.1.tar.gz https://github.com/t3rn/executor-release/releases/download/v0.63.1.0/executor-linux-v0.63.1.tar.gz || { echo "下载失败"; exit 1; }
 
 # 解压文件
 echo "正在解压文件..."
@@ -46,7 +46,7 @@ EXECUTOR_MAX_L3_GAS_PRICE="${EXECUTOR_MAX_L3_GAS_PRICE:-100}"
 export ENVIRONMENT=testnet
 export LOG_LEVEL=debug
 export LOG_PRETTY=false
-export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,unichain-sepolia,optimism-sepolia,l2rn'
+export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,unichain-sepolia,monad-testnet,optimism-sepolia,l2rn'
 export EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=false
 export EXECUTOR_MAX_L3_GAS_PRICE="$EXECUTOR_MAX_L3_GAS_PRICE"
 
@@ -62,7 +62,8 @@ read -p "请输入 KEY ALCHEMY (留空使用默认公共RPC): " KEYALCHEMY
 # 判断用户是否输入了 KEYALCHEMY
 if [[ -n "$KEYALCHEMY" ]]; then
     export RPC_ENDPOINTS='{
-        "l2rn": ["https://b2n.rpc.caldera.xyz/http"],
+        "l2rn": ["https://t3rn-b2n.blockpi.network/v1/rpc/public", "https://b2n.rpc.caldera.xyz/http"],
+        "mont": ["https://monad-testnet.g.alchemy.com/v2/'"$KEYALCHEMY"'"],
         "arbt": ["https://arb-sepolia.g.alchemy.com/v2/'"$KEYALCHEMY"'"],
         "bast": ["https://base-sepolia.g.alchemy.com/v2/'"$KEYALCHEMY"'"],
         "opst": ["https://opt-sepolia.g.alchemy.com/v2/'"$KEYALCHEMY"'"],
@@ -70,7 +71,8 @@ if [[ -n "$KEYALCHEMY" ]]; then
     }'
 else
     export RPC_ENDPOINTS='{
-        "l2rn": ["https://b2n.rpc.caldera.xyz/http"],
+        "l2rn": ["https://t3rn-b2n.blockpi.network/v1/rpc/public", "https://b2n.rpc.caldera.xyz/http"],
+        "mont": ["https://testnet-rpc.monad.xyz"],
         "arbt": ["https://arbitrum-sepolia.drpc.org", "https://sepolia-rollup.arbitrum.io/rpc"],
         "bast": ["https://base-sepolia-rpc.publicnode.com", "https://base-sepolia.drpc.org"],
         "opst": ["https://sepolia.optimism.io", "https://optimism-sepolia.drpc.org"],
@@ -82,7 +84,7 @@ fi
 echo "RPC_ENDPOINTS 已设置为:"
 echo "$RPC_ENDPOINTS"
 
-read -p "请输入 PRIVATE_KEY_LOCAL 的值: " PRIVATE_KEY_LOCAL
+read -p "请输入 evm私钥 的值: " PRIVATE_KEY_LOCAL
 export PRIVATE_KEY_LOCAL="$PRIVATE_KEY_LOCAL"
 
 # 进入 executor 目录并启动
