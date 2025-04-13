@@ -71,6 +71,33 @@ function main_menu() {
 
 # 执行脚本函数
 function execute_script() {
+    # 检查并安装 Node.js 和 npm
+function install_node_npm() {
+    if ! command -v npm &> /dev/null || ! command -v node &> /dev/null; then
+        echo "Node.js 或 npm 未安装，正在安装 Node.js..."
+        # 假设使用基于 Debian/Ubuntu 的系统，安装 Node.js LTS 版本
+        curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        if [ $? -eq 0 ]; then
+            echo "Node.js 和 npm 安装成功，版本信息："
+            node -v
+            npm -v
+        else
+            echo "Node.js 安装失败，请检查网络或包管理器配置。"
+            exit 1
+        fi
+    else
+        echo "Node.js 和 npm 已安装，继续执行。"
+        node -v
+        npm -v
+    fi
+}
+
+# 执行脚本函数
+function execute_script() {
+    # 先检查并安装 Node.js 和 npm
+    install_node_npm
+
     # 检查 pm2 是否安装，如果没有安装则自动安装
     if ! command -v pm2 &> /dev/null; then
         echo "pm2 未安装，正在安装 pm2..."
@@ -88,7 +115,6 @@ function execute_script() {
     # 检查 tar 是否安装，如果没有安装则自动安装
     if ! command -v tar &> /dev/null; then
         echo "tar 未安装，正在安装 tar..."
-        # 假设使用的是基于 Debian/Ubuntu 的系统
         sudo apt-get update && sudo apt-get install -y tar
         if [ $? -eq 0 ]; then
             echo "tar 安装成功。"
