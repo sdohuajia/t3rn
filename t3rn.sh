@@ -12,6 +12,27 @@ if [ "$(id -u)" != "0" ]; then
     exit 1
 fi
 
+# 检查并安装 Node.js 和 npm
+function install_node_npm() {
+    if ! command -v npm &> /dev/null || ! command -v node &> /dev/null; then
+        echo "Node.js 或 npm 未安装，正在安装 Node.js..."
+        curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        if [ $? -eq 0 ]; then
+            echo "Node.js 和 npm 安装成功，版本信息："
+            node -v
+            npm -v
+        else
+            echo "Node.js 安装失败，请检查网络或包管理器配置。"
+            exit 1
+        fi
+    else
+        echo "Node.js 和 npm 已安装，继续执行。"
+        node -v
+        npm -v
+    fi
+}
+
 # 主菜单函数
 function main_menu() {
     while true; do
@@ -44,7 +65,7 @@ function main_menu() {
                 delete_node
                 ;;
             4)
-                install_v63.1
+                install_v63_1
                 ;;
             5)
                 install_v57
@@ -64,6 +85,7 @@ function main_menu() {
                 ;;
             *)
                 echo "无效的选择，请重新输入。"
+                read -n 1 -s -r -p "按任意键继续..."
                 ;;
         esac
     done
@@ -72,30 +94,6 @@ function main_menu() {
 # 执行脚本函数
 function execute_script() {
     # 检查并安装 Node.js 和 npm
-function install_node_npm() {
-    if ! command -v npm &> /dev/null || ! command -v node &> /dev/null; then
-        echo "Node.js 或 npm 未安装，正在安装 Node.js..."
-        # 假设使用基于 Debian/Ubuntu 的系统，安装 Node.js LTS 版本
-        curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-        sudo apt-get install -y nodejs
-        if [ $? -eq 0 ]; then
-            echo "Node.js 和 npm 安装成功，版本信息："
-            node -v
-            npm -v
-        else
-            echo "Node.js 安装失败，请检查网络或包管理器配置。"
-            exit 1
-        fi
-    else
-        echo "Node.js 和 npm 已安装，继续执行。"
-        node -v
-        npm -v
-    fi
-}
-
-# 执行脚本函数
-function execute_script() {
-    # 先检查并安装 Node.js 和 npm
     install_node_npm
 
     # 检查 pm2 是否安装，如果没有安装则自动安装
@@ -126,11 +124,15 @@ function execute_script() {
         echo "tar 已安装，继续执行。"
     fi
 
+    # 创建 executor 目录（如果不存在）
+    mkdir -p "$EXECUTOR_DIR"
+    cd "$EXECUTOR_DIR" || { echo "无法切换到 $EXECUTOR_DIR"; exit 1; }
+
     # 下载最新版本的文件
     echo "正在下载最新版本的 executor..."
     curl -s https://api.github.com/repos/t3rn/executor-release/releases/latest | \
     grep -Po '"tag_name": "\K.*?(?=")' | \
-    xargs -I {} wget https://github.com/t3rn/executor-release/releases/download/{}/executor-linux-{}.tar.gz
+    xargs -I {} wget -q https://github.com/t3rn/executor-release/releases/download/{}/executor-linux-{}.tar.gz
 
     # 检查下载是否成功
     if [ $? -eq 0 ]; then
@@ -172,17 +174,15 @@ function execute_script() {
     export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,unichain-sepolia,optimism-sepolia,l2rn'
     export EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=false
     export EXECUTOR_MAX_L3_GAS_PRICE="$EXECUTOR_MAX_L3_GAS_PRICE"
-
-    # 新增的环境变量
     export EXECUTOR_PROCESS_BIDS_ENABLED=true
     export EXECUTOR_PROCESS_ORDERS_ENABLED=true
     export EXECUTOR_PROCESS_CLAIMS_ENABLED=true
     export RPC_ENDPOINTS='{
-    "l2rn": ["https://b2n.rpc.caldera.xyz/http"],
-    "arbt": ["https://arbitrum-sepolia.drpc.org", "https://sepolia-rollup.arbitrum.io/rpc"],
-    "bast": ["https://base-sepolia-rpc.publicnode.com", "https://base-sepolia.drpc.org"],
-    "opst": ["https://sepolia.optimism.io", "https://optimism-sepolia.drpc.org"],
-    "unit": ["https://unichain-sepolia.drpc.org", "https://sepolia.unichain.org"]
+        "l2rn": ["https://b2n.rpc.caldera.xyz/http"],
+        "arbt": ["https://arbitrum-sepolia.drpc.org", "https://sepolia-rollup.arbitrum.io/rpc"],
+        "bast": ["https://base-sepolia-rpc.publicnode.com", "https://base-sepolia.drpc.org"],
+        "opst": ["https://sepolia.optimism.io", "https://optimism-sepolia.drpc.org"],
+        "unit": ["https://unichain-sepolia.drpc.org", "https://sepolia.unichain.org"]
     }'
 
     # 提示用户输入私钥
@@ -193,11 +193,11 @@ function execute_script() {
 
     # 删除压缩文件
     echo "删除压缩包..."
-    rm executor-linux-*.tar.gz
+    rm -f executor-linux-*.tar.gz
 
     # 切换目录到 executor/bin
     echo "切换目录并准备使用 pm2 启动 executor..."
-    cd ~/executor/executor/bin
+    cd "$EXECUTOR_DIR/executor/bin" || { echo "无法切换到 executor/bin 目录"; exit 1; }
 
     # 使用 pm2 启动 executor
     echo "通过 pm2 启动 executor..."
@@ -210,16 +210,16 @@ function execute_script() {
 
     # 提示用户按任意键返回主菜单
     read -n 1 -s -r -p "按任意键返回主菜单..."
-    main_menu
 }
 
 # 查看日志函数
 function view_logs() {
     if [ -f "$LOGFILE" ]; then
         echo "实时显示日志文件内容（按 Ctrl+C 退出）："
-        tail -f "$LOGFILE"  # 使用 tail -f 实时跟踪日志文件
+        tail -f "$LOGFILE"
     else
         echo "日志文件不存在。"
+        read -n 1 -s -r -p "按任意键返回主菜单..."
     fi
 }
 
@@ -227,9 +227,9 @@ function view_logs() {
 function delete_node() {
     echo "正在停止节点进程..."
 
-    # 使用 pm2 停止 executor 进程
-    pm2 stop "executor"
-    pm2 delete "executor"
+    # 使用 pm2 停止和删除 executor 进程
+    pm2 stop "executor" 2>/dev/null
+    pm2 delete "executor" 2>/dev/null
 
     # 删除 executor 所在的目录
     if [ -d "$EXECUTOR_DIR" ]; then
@@ -244,79 +244,91 @@ function delete_node() {
 
     # 提示用户按任意键返回主菜单
     read -n 1 -s -r -p "按任意键返回主菜单..."
-    main_menu
 }
 
-# 安装 v62.sh 函数
-function install_v62() {
-    echo "正在下载并安装 v62.sh..."
-    wget -O v62.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v62.sh && sed -i 's/\r$//' v62.sh && chmod +x v62.sh && ./v62.sh
+# 安装 v63.1.sh 函数
+function install_v63_1() {
+    echo "正在下载并安装 v63.1.sh..."
+    wget -O v63.1.sh https://raw.githubusercontent.com/sdohuajia/t3rn/main/v63.1.sh
     if [ $? -eq 0 ]; then
-    echo "v62.sh 安装成功。"
+        sed -i 's/\r$//' v63.1.sh
+        chmod +x v63.1.sh
+        ./v63.1.sh
+        echo "v63.1.sh 安装成功。"
     else
-    echo "v62.sh 安装失败，请检查脚本。"
+        echo "v63.1.sh 下载失败，请检查网络或URL。"
     fi
 
     # 提示用户按任意键返回主菜单
     read -n 1 -s -r -p "按任意键返回主菜单..."
-    main_menu
+}
+
+# 安装 v57.sh 函数
+function install_v57() {
+    echo "正在下载并安装 v57.sh..."
+    wget -O v57.sh https://raw.githubusercontent.com/sdohuajia/t3rn/main/v57.sh
+    if [ $? -eq 0 ]; then
+        sed -i 's/\r$//' v57.sh
+        chmod +x v57.sh
+        ./v57.sh
+        echo "v57.sh 安装成功。"
+    else
+        echo "v57.sh 下载失败，请检查网络或URL。"
+    fi
+
+    # 提示用户按任意键返回主菜单
+    read -n 1 -s -r -p "按任意键返回主菜单..."
+}
+
+# 安装 v58.sh 函数
+function install_v58() {
+    echo "正在下载并安装 v58.sh..."
+    wget -O v58.sh https://raw.githubusercontent.com/sdohuajia/t3rn/main/v58.sh
+    if [ $? -eq 0 ]; then
+        sed -i 's/\r$//' v58.sh
+        chmod +x v58.sh
+        ./v58.sh
+        echo "v58.sh 安装成功。"
+    else
+        echo "v58.sh 下载失败，请检查网络或URL。"
+    fi
+
+    # 提示用户按任意键返回主菜单
+    read -n 1 -s -r -p "按任意键返回主菜单..."
 }
 
 # 安装 v59.sh 函数
 function install_v59() {
     echo "正在下载并安装 v59.sh..."
-    wget -O v59.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v59.sh && sed -i 's/\r$//' v59.sh && chmod +x v59.sh && ./v59.sh
+    wget -O v59.sh https://raw.githubusercontent.com/sdohuajia/t3rn/main/v59.sh
     if [ $? -eq 0 ]; then
-    echo "v59.sh 安装成功。"
+        sed -i 's/\r$//' v59.sh
+        chmod +x v59.sh
+        ./v59.sh
+        echo "v59.sh 安装成功。"
     else
-    echo "v59.sh 安装失败，请检查脚本。"
+        echo "v59.sh 下载失败，请检查网络或URL。"
     fi
 
     # 提示用户按任意键返回主菜单
     read -n 1 -s -r -p "按任意键返回主菜单..."
-    main_menu
 }
 
-# 安装 v63.1.sh 函数
-function install_v63.1() {
-    wget -O v63.1.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v63.1.sh && sed -i 's/\r$//' v63.1.sh && chmod +x v63.1.sh && ./v63.1.sh
+# 安装 v62.sh 函数
+function install_v62() {
+    echo "正在下载并安装 v62.sh..."
+    wget -O v62.sh https://raw.githubusercontent.com/sdohuajia/t3rn/main/v62.sh
     if [ $? -eq 0 ]; then
-    echo "v63.1.sh 安装成功。"
+        sed -i 's/\r$//' v62.sh
+        chmod +x v62.sh
+        ./v62.sh
+        echo "v62.sh 安装成功。"
     else
-    echo "v63.1.sh 安装失败，请检查脚本。"
+        echo "v62.sh 下载失败，请检查网络或URL。"
     fi
 
     # 提示用户按任意键返回主菜单
     read -n 1 -s -r -p "按任意键返回主菜单..."
-    main_menu
-}
-
-# 安装 v57.sh 函数
-function install_v57() {
-    wget -O v57.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v57.sh && sed -i 's/\r$//' v57.sh && chmod +x v57.sh && ./v57.sh
-    if [ $? -eq 0 ]; then
-    echo "v57.sh 安装成功。"
-    else
-    echo "v57.sh 安装失败，请检查脚本。"
-    fi
-
-    # 提示用户按任意键返回主菜单
-    read -n 1 -s -r -p "按任意键返回主菜单..."
-    main_menu
-}
-
-# 安装 v58.sh 函数
-function install_v58() {
-    wget -O v58.sh https://raw.githubusercontent.com/sdohuajia/t3rn/refs/heads/main/v58.sh && sed -i 's/\r$//' v58.sh && chmod +x v58.sh && ./v58.sh
-    if [ $? -eq 0 ]; then
-    echo "v58.sh 安装成功。"
-    else
-    echo "v58.sh 安装失败，请检查脚本。"
-    fi
-
-    # 提示用户按任意键返回主菜单
-    read -n 1 -s -r -p "按任意键返回主菜单..."
-    main_menu
 }
 
 # 启动主菜单
