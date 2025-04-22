@@ -197,8 +197,8 @@ function execute_script() {
 
     # 切换目录到 executor/bin
     echo "切换目录并准备使用 pm2 启动 executor..."
-    cd "$EXECUTOR_DIR/executor/bin" || { echo "无法切换到 executor/bin 目录"; exit 1; }
-
+    cd "$EXECUTOR_DIR/executor/executor/bin" || { echo "无法切换到 executor/executor/bin 目录"; exit 1; }
+    
     # 使用 pm2 启动 executor
     echo "通过 pm2 启动 executor..."
     pm2 start ./executor --name "executor" --log "$LOGFILE" --env NODE_ENV=testnet
