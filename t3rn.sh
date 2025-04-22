@@ -177,6 +177,7 @@ function execute_script() {
     export EXECUTOR_PROCESS_BIDS_ENABLED=true
     export EXECUTOR_PROCESS_ORDERS_ENABLED=true
     export EXECUTOR_PROCESS_CLAIMS_ENABLED=true
+    export NETWORKS_DISABLED="blast-sepolia"
     export RPC_ENDPOINTS='{
         "l2rn": ["https://b2n.rpc.caldera.xyz/http"],
         "arbt": ["https://arbitrum-sepolia.drpc.org", "https://sepolia-rollup.arbitrum.io/rpc"],
