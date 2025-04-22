@@ -171,7 +171,7 @@ function execute_script() {
     export ENVIRONMENT=testnet
     export LOG_LEVEL=debug
     export LOG_PRETTY=false
-    export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,unichain-sepolia,optimism-sepolia,l2rn'
+    export ENABLED_NETWORKS='arbitrum-sepolia,base-sepolia,unichain-sepolia,monad-testnet,optimism-sepolia,l2rn'
     export EXECUTOR_PROCESS_PENDING_ORDERS_FROM_API=false
     export EXECUTOR_MAX_L3_GAS_PRICE="$EXECUTOR_MAX_L3_GAS_PRICE"
     export EXECUTOR_PROCESS_BIDS_ENABLED=true
