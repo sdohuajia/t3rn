@@ -179,7 +179,8 @@ function execute_script() {
     export EXECUTOR_PROCESS_CLAIMS_ENABLED=true
     export NETWORKS_DISABLED="blast-sepolia"
     export RPC_ENDPOINTS='{
-        "l2rn": ["https://b2n.rpc.caldera.xyz/http"],
+        "l2rn": ["https://t3rn-b2n.blockpi.network/v1/rpc/public", "https://b2n.rpc.caldera.xyz/http"],
+        "mont": ["https://testnet-rpc.monad.xyz"],
         "arbt": ["https://arbitrum-sepolia.drpc.org", "https://sepolia-rollup.arbitrum.io/rpc"],
         "bast": ["https://base-sepolia-rpc.publicnode.com", "https://base-sepolia.drpc.org"],
         "opst": ["https://sepolia.optimism.io", "https://optimism-sepolia.drpc.org"],
