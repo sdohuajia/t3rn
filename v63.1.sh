@@ -88,7 +88,7 @@ read -p "请输入 evm私钥 的值: " PRIVATE_KEY_LOCAL
 export PRIVATE_KEY_LOCAL="$PRIVATE_KEY_LOCAL"
 
 # 进入 executor 目录并启动
-cd "$EXECUTOR_DIR/executor/bin" || { echo "切换目录失败"; exit 1; }
+cd "$EXECUTOR_DIR/executor/executor/bin" || { echo "无法切换到 executor/executor/bin 目录"; exit 1; }
 pm2 start ./executor --name "executor" --log "$LOGFILE" --env NODE_ENV=testnet
 pm2 list
 echo "executor 已通过 pm2 启动。"
